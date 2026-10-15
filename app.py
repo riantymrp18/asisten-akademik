@@ -6,21 +6,11 @@ st.set_page_config(page_title="Asisten Informasi Akademik", page_icon="🤖")
 st.title("🤖 Asisten Informasi Akademik")
 st.caption("Tanyakan informasi seputar perkuliahan, jadwal, dan administrasi akademik.")
 
-# 2. Masukkan Groq API Key di Sidebar
-st.sidebar.header("🔑 Pengaturan API Key")
-api_key_input = st.sidebar.text_input("Masukkan Groq API Key:", type="password")
-
-if st.sidebar.button("Simpan API Key"):
-    if api_key_input:
-        st.session_state.api_key = api_key_input
-        st.sidebar.success("Groq API Key berhasil disimpan!")
-    else:
-        st.sidebar.error("Mohon masukkan API Key dengan benar.")
-
-api_key = st.session_state.get("api_key", "")
-
-if not api_key:
-    st.info("Silakan masukkan dan simpan Groq API Key di sidebar sebelah kiri untuk mulai.", icon="🔑")
+# 2. Ambil Groq API Key secara otomatis dari Secrets Streamlit
+try:
+    api_key = st.secrets["GROQ_API_KEY"]
+except Exception:
+    st.error("Groq API Key belum diatur di Streamlit Secrets. Harap atur terlebih dahulu di menu pengaturan deployment.")
     st.stop()
 
 # Inisialisasi Klien Groq
