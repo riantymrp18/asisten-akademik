@@ -3,6 +3,17 @@ from groq import Groq
 
 # 1. Judul dan Tampilan Header
 st.set_page_config(page_title="Asisten Informasi Akademik", page_icon="🤖")
+
+# Sembunyikan Header bawaan Streamlit (Share, GitHub icon, Main Menu) & Footer
+hide_st_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            header {visibility: hidden;}
+            </style>
+            """
+st.markdown(hide_st_style, unsafe_allow_html=True)
+
 st.title("🤖 Asisten Informasi Akademik")
 st.caption("Tanyakan informasi seputar perkuliahan, jadwal, dan administrasi akademik.")
 
@@ -23,7 +34,7 @@ except Exception as e:
 # 3. SETTING BAHAN / KNOWLEDGE BASE AI (System Prompt)
 KNOWLEDGE_BASE = """
 Kamu adalah Asisten Informasi Akademik Universitas Buana Perjuangan (UBP) Karawang.
-Berikut adalah data/bahan informasi resmi yang harus kamu gunakan untuk menjawab pertanyaan:
+Berikut adalah data/bahan informasi resmi dan lengkap yang harus kamu gunakan untuk menjawab pertanyaan:
 
 - Nama Kampus: Universitas Buana Perjuangan (UBP) Karawang
 - Program Studi Utama: Sistem Informasi (S1)
@@ -38,7 +49,67 @@ Berikut adalah data/bahan informasi resmi yang harus kamu gunakan untuk menjawab
   - Kartu Rencana Studi (KRS) diisi melalui portal akademik masing-masing mahasiswa setiap awal semester.
 - Layanan Akademik: Hubungi bagian tata usaha prodi atau cek portal web kampus untuk informasi surat aktif kuliah dan cuti.
 
-- TAMBAHAN DATA JADWAL PERKULIAHAN & PRODI LAIN (Semester Ganjil TA 2026/2027):
+- DETAIL JADWAL PERKULIAHAN PRODI SISTEM INFORMASI (SEMESTER GANJIL TA 2026/2027):
+
+  1. SEMESTER 1 (Angkatan 2026, Ruang: A.307-A.308):
+     - Senin:
+       * Pendidikan Pancasila (2 SKS, Dr. Erwin Susanto, S.Pd., M.Pd) | Kelas A: 07.00-08.40 (A.307), Kelas B: 09.00-10.40 (A.307), Kelas C: 20.00-21.40 (A.307).
+       * Percakapan Bahasa Inggris (2 SKS, Hilda Tri Yulianti, M.Pd) | Kelas A: 09.00-10.40 (A.308), Kelas B: 11.00-12.40 (A.308), Kelas C: 18.15-19.55 (A.308).
+       * Bahasa Indonesia (2 SKS, Lisa Mariam, M.Pd) | Kelas A: 09.00-10.40 (A.307), Kelas B: 07.00-08.40 (A.307), Kelas C: 18.15-19.55 (A.307).
+     - Rabu:
+       * Dasar-Dasar Akuntansi dan Keuangan (2 SKS, Dhea Imroatul Fatihah, SE., M.Ak) | Kelas A: 07.00-08.40 (A.308), Kelas B: 09.00-10.40 (A.308), Kelas C: 18.15-19.55 (A.308).
+       * Pengantar Sistem Informasi (3 SKS, Agustia Hananto, M.Kom) | Kelas A: 07.00-08.40 (A.307), Kelas B: 09.00-10.40 (A.307), Kelas C: 20.00-21.40 (A.307).
+     - Kamis:
+       * Algoritma dan Pemrograman (Teori) (3 SKS, Dr. Tukino, S.Kom, MMSI) | Kelas A: 07.00-08.40 & 09.00-10.40 (A.307), Kelas B: 13.00-14.40 & 15.00-16.40 (A.307), Kelas C: 18.15-19.55 & 20.00-21.40 (A.307).
+     - Jumat:
+       * Matematika Diskrit (3 SKS, Fitria Nurapriani, S.Pd., M.Pd) | Kelas A: 07.00-08.40 (A.307), Kelas B: 09.00-10.40 (A.307), Kelas C: 20.00-21.40 (A.307).
+       * Pengantar Manajemen dan Bisnis (2 SKS, Rieke Retnosari, Ph.D) | Kelas A: 09.00-10.40 (A.308), Kelas B: 07.00-08.40 (A.308), Kelas C: 18.15-19.55 (A.308).
+
+  2. SEMESTER 3 (Angkatan 2025, Ruang: A.407-A.408 / Lab.Kom):
+     - Senin:
+       * Analisa dan Perancangan Sistem Informasi (T/P) (3 SKS, Dr. Tukino, S.Kom, MMSI) | Kelas A: 07.00-08.40 (A.408), Kelas B: 09.00-10.40 (A.408), Kelas C: 18.15-19.55 (A.408).
+       * Arsitektur Enterprise (3 SKS, Prof. April Lia Hananto, M.Kom., Ph.D) | Kelas A: 09.00-10.40 (A.407), Kelas B: 07.00-08.40 (A.407), Kelas C: 20.00-21.40 (A.407).
+     - Selasa:
+       * Desain dan Manajemen Jaringan Komputer (Teori & Praktik) (3 SKS, Agustia Hananto, M.Kom) | Kelas A: Teori 07.00-08.40 / Praktik 09.00-10.40 (A.408 & Lab.Kom), Kelas B: Teori 13.00-14.40 / Praktik 15.00-16.40 (A.408 & Lab.Kom), Kelas C: Teori 18.15-19.55 / Praktik 20.00-21.40 (A.408 & Lab.Kom).
+       * Jati Diri Bangsa (2 SKS, Dr. Yogi Nugraha, M.Pd) | Kelas A: 11.00-12.40 (A.407), Kelas B: 13.00-14.40 (A.407), Kelas C: 20.00-21.40 (A.407).
+     - Rabu:
+       * Sistem Basis Data (2 SKS, Elfina Novalia, M.Kom) | Kelas A: 09.00-10.40 (A.408), Kelas B: 07.00-08.40 (A.408), Kelas C: 18.15-19.55 (A.408).
+       * Digital dan Media Baru (3 SKS, Dr. Shofa Shofia H, S.Kom., M.Kom) | Kelas A: 07.00-08.40 (A.407), Kelas B: 09.00-10.40 (A.407), Kelas C: 18.15-19.55 (A.407).
+     - Kamis:
+       * Statistik Probabilitas (2 SKS, Fitria Nurapriani, S.Pd., M.Pd) | Kelas A: 09.00-10.40 (A.408), Kelas B: 07.00-08.40 (A.408), Kelas C: 20.00-21.40 (A.408).
+     - Jumat:
+       * Desain UI-UX (Teori & Praktik) (Teori 2 SKS oleh Baenil Huda, ST., M.Kom; Praktik 2 SKS) | Kelas A: Teori 07.00-08.40 / Praktik 09.00-10.40 (A.408 & Lab.Kom), Kelas B: Teori 13.00-14.40 / Praktik 15.00-16.40 (A.408 & Lab.Kom), Kelas C: Teori 18.15-19.55 / Praktik 20.00-21.40 (A.408 & Lab.Kom).
+
+  3. SEMESTER 5 (Angkatan 2024, Ruang: A.407-A.410 / Lab.Kom):
+     - Senin:
+       * Integrasi Aplikasi Perusahaan (Teori & Praktik) (3 SKS, Bayu Priyatna, M.Kom, Ph.D) | Kelas A: Teori 07.00-08.40 / Praktik 09.00-10.40 (A.408 & Lab.Kom), Kelas B: Teori 13.00-14.40 / Praktik 15.00-16.40 (A.408 & Lab.Kom), Kelas C: Teori 18.15-19.55 / Praktik 20.00-21.40 (A.408 & Lab.Kom).
+       * Manajemen Proyek Sistem Informasi (2 SKS, Elfina Novalia, M.Kom) | Kelas A: 07.00-08.40 (A.408), Kelas B: 09.00-10.40 (A.408), Kelas C: 18.15-19.55 (A.408).
+     - Selasa:
+       * Etika Profesi Teknologi Informasi (3 SKS, Sutan Faisal, M.Kom) | Kelas A: 09.00-10.40 (A.410A), Kelas B: 07.00-08.40 (A.404B), Kelas C: 20.00-21.40 (A.308C).
+       * Sistem Pendukung Keputusan (3 SKS, Dr. Shofa Shofia H., S.Kom., M.Kom) | Kelas A: 07.00-08.40 (A.407), Kelas B: 09.00-10.40 (A.407), Kelas C: 18.15-19.55 (A.407).
+     - Rabu:
+       * Manajemen Proses Bisnis (3 SKS, Kiki Ahmad Baihaqi, M.Kom) | Kelas A: 09.00-10.40 (A.409), Kelas B: 07.00-08.40 (A.409), Kelas C: 20.00-21.40 (A.408C).
+     - Kamis:
+       * Keamanan Teknologi Informasi dan Manajemen Resiko (3 SKS, Baenil Huda, ST., M.Kom) | Kelas A: 07.00-08.40 (A.407C), Kelas B: 09.00-10.40 (A.409), Kelas C: 18.15-19.55 (A.409).
+     - Jumat:
+       * Tata Kelola dan Manajemen Teknologi Informasi (3 SKS, Prof. April Lia Hananto, M.Kom., Ph.D) | Kelas A: 07.00-08.40 (A.408C), Kelas B: 09.00-10.40 (A.407BC), Kelas C: 18.15-19.55 (A.407BC).
+
+  4. SEMESTER 7 (Angkatan 2023, Ruang: A.305-A.409 / Lab.Kom):
+     - Senin:
+       * Big Data Analysis & Business Intelligence (Teori & Praktik) (3 SKS, Agustia Hananto, M.Kom) | Kelas A: Teori 09.00-10.40 / Praktik 11.00-12.40 (A.409A & Lab), Kelas B: Teori 13.00-14.40 / Praktik 15.00-16.40 (A.408B & Lab), Kelas C: Teori 18.15-19.55 / Praktik 20.00-21.40 (A.407C & Lab).
+     - Selasa:
+       * Inovasi Digital (Teori & Praktik) (3 SKS, Dr. Shofa Shofia H., S.Kom., M.Kom) | Kelas A: Teori 07.00-08.40 / Praktik 09.00-10.40 (A.308 & Lab), Kelas B: Teori 13.00-14.40 / Praktik 15.00-16.40 (A.308 & Lab), Kelas C: Teori 18.15-19.55 / Praktik 20.00-21.40 (A.310C & Lab).
+     - Rabu:
+       * Kewirausahaan (3 SKS, Rieke Retnosari, MM., Ph.D & Baenil Huda, M.Kom) | Kelas A: 09.00-10.40 (A.308), Kelas B: 13.00-14.40 (A.308), Kelas C: 18.15-19.55 (A.308).
+       * Bahasa Jepang (2 SKS, Rahmat, S.Pd., M.Pd / Ray Andriana, S) | Kelas A: 11.00-12.40 (A.305), Kelas B: 09.00-10.40 (A.305), Kelas C: 20.00-21.40 (A.307C).
+     - Kamis:
+       * Sistem Informasi Penjualan Online (Teori & Praktik) (3 SKS, Bayu Priyatna, M.Kom, Ph.D) | Kelas A: Teori 07.00-08.40 / Praktik 09.00-10.40 (A.308 & Lab), Kelas B: Teori 13.00-14.40 / Praktik 15.00-16.40 (A.308 & Lab), Kelas C: Teori 18.15-19.55 / Praktik 20.00-21.40 (A.308 & Lab).
+     - Jumat:
+       * Proposal Tugas Akhir (2 SKS, Elfina Novalia, M.Kom / Fitria Nurapriani, M.Pd) | Kelas A: 11.00-12.40, Kelas B: 09.00-10.40, Kelas C: 18.15-19.55.
+     - Sabtu:
+       * Kuliah Kerja Nyata (KKN) (3 SKS, Dr. Tukino, S.Kom, MMSI) | Kelas A: 09.00-10.40, Kelas B: 11.00-12.40, Kelas C: 18.15-19.55.
+
+- TAMBAHAN DATA PRODI & FAKULTAS LAINNYA DI UBP KARAWANG:
   1. Program Studi Magister Manajemen (S2):
      - Contoh Jadwal Semester I (Kelas MM26A): Etika Profesi & Tata Kelola Organisasi (Sabtu 08.00 oleh Dr. H. Sihabudin), Inovasi & Kewirausahaan Digital (Sabtu 10.00 oleh Prof. Dr. H. Dedi Mulyadi), dll.
   2. Program Studi S1 Teknik Industri:
@@ -55,7 +126,8 @@ Berikut adalah data/bahan informasi resmi yang harus kamu gunakan untuk menjawab
      - Menyediakan kelas paralel dari semester 1 hingga semester 7 (IF26, IF25, IF24, IF23). Mata kuliah mencakup Algoritma, Basis Data, Pemrograman Web, Pembelajaran Mendalam, Visi Komputer, dll.
 
 Aturan Menjawab:
-- Jawablah pertanyaan mahasiswa secara ramah, sopan, dan berdasarkan data di atas.
+- Jawablah pertanyaan mahasiswa secara ramah, sopan, dan gunakan format tabel yang rapi apabila mereka menanyakan jadwal mata kuliah.
+- Pastikan informasi hari, jam, dosen, ruang, dan kelas merujuk tepat pada data di atas.
 - Jika informasi tidak ada di dalam data di atas, arahkan mahasiswa untuk bertanya langsung ke bagian administrasi prodi masing-masing di UBP Karawang.
 """
 
