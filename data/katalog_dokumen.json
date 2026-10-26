@@ -13,6 +13,6 @@
   {"judul": "Jadwal Perkuliahan Prodi Manajemen 20261", "file": "Jadwal_Manajemen_20261.pdf", "kata_kunci": ["manajemen"], "kecuali": ["magister", "s2"], "jenis": "jadwal", "tanggal": "19 Sep 2026"},
   {"judul": "Jadwal Perkuliahan Prodi Magister Manajemen 20261", "file": "Jadwal_Magister_Manajemen_20261.pdf", "kata_kunci": ["magister manajemen", "s2 manajemen"], "kecuali": [], "jenis": "jadwal", "tanggal": "19 Sep 2026"},
   {"judul": "SK Rektor Kalender Akademik 2026/2027", "file": "Kalender_Akademik_2026-2027.pdf", "kata_kunci": ["kalender akademik", "kalender", "uts", "uas"], "kecuali": [], "jenis": "dokumen", "tanggal": "SK 11 Mei 2026"},
-  {"judul": "Buku Panduan Akademik 2024", "file": "BUKU PANDUAN AKADEMIK 2024.pdf", "kata_kunci": ["panduan akademik", "buku panduan", "peraturan akademik"], "kecuali": [], "jenis": "dokumen", "tanggal": "11 Sep 2024"}
+  {"judul": "Buku Panduan Akademik 2024", "file": "BUKU PANDUAN AKADEMIK 2024.pdf", "kata_kunci": ["panduan akademik", "buku panduan", "peraturan akademik"], "kecuali": [], "jenis": "dokumen", "tanggal": "11 Sep 2024"},
   {"judul": "SK Rektor Kalender Akademik 2026/2027", "file": "Kalender_Akademik_2026-2027.pdf", "teks": "data/teks/Kalender_Akademik_2026-2027.txt", "kata_kunci": ["kalender akademik", "kalender", "uts", "uas"], "kecuali": [], "jenis": "dokumen", "tanggal": "SK 11 Mei 2026"}
 ]
