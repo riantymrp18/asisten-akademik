@@ -35,6 +35,31 @@ def cari_lampiran(pertanyaan: str) -> list:
     return hasil
 
 
+def cari_teks(pertanyaan: str) -> list:
+    q = pertanyaan.lower()
+    hasil = []
+    for doc in KATALOG:
+        if not doc.get("teks"):
+            continue
+        if any(k in q for k in doc.get("kecuali", [])):
+            continue
+        if any(k in q for k in doc["kata_kunci"]):
+            hasil.append(doc)
+    return hasil
+
+
+def ambil_teks(docs: list, maks: int = 2) -> str:
+    bagian = []
+    for doc in docs:
+        path = os.path.join(BASE_DIR, doc["teks"])
+        if os.path.exists(path):
+            with open(path, encoding="utf-8") as f:
+                bagian.append(f"--- {doc['judul']} ---\n{f.read()}")
+        if len(bagian) >= maks:
+            break
+    return "\n\n".join(bagian)
+
+
 @st.cache_data
 def baca_file(path: str) -> bytes:
     with open(path, "rb") as f:
