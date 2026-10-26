@@ -1,10 +1,10 @@
 import streamlit as st
 from groq import Groq
+from lampiran import cari_lampiran, render_lampiran, ada_permintaan_file
 
 # 1. Judul dan Tampilan Header
 st.set_page_config(page_title="Asisten Informasi Akademik", page_icon="🤖")
 
-# Sembunyikan Header bawaan Streamlit (Share, GitHub icon, Main Menu) & Footer
 hide_st_style = """
             <style>
             #MainMenu {visibility: hidden;}
@@ -17,24 +17,23 @@ st.markdown(hide_st_style, unsafe_allow_html=True)
 st.title("🤖 Asisten Informasi Akademik")
 st.caption("Tanyakan informasi seputar perkuliahan, jadwal, dan administrasi akademik.")
 
-# 2. Ambil Groq API Key secara otomatis dari Secrets Streamlit
+# 2. Ambil Groq API Key dari Secrets Streamlit
 try:
     api_key = st.secrets["GROQ_API_KEY"]
 except Exception:
     st.error("Groq API Key belum diatur di Streamlit Secrets. Harap atur terlebih dahulu di menu pengaturan deployment.")
     st.stop()
 
-# Inisialisasi Klien Groq
 try:
     client = Groq(api_key=api_key)
 except Exception as e:
     st.error(f"Gagal menginisialisasi Groq API: {e}")
     st.stop()
 
-# 3. SETTING BAHAN / KNOWLEDGE BASE AI (System Prompt)
+# 3. KNOWLEDGE BASE AI (System Prompt)
 KNOWLEDGE_BASE = """
 Kamu adalah Asisten Informasi Akademik Universitas Buana Perjuangan (UBP) Karawang.
-Berikut adalah data/bahan informasi resmi dan lengkap yang harus kamu gunakan untuk menjawab pertanyaan:
+Berikut adalah data/bahan informasi resmi yang harus kamu gunakan untuk menjawab pertanyaan:
 
 - Nama Kampus: Universitas Buana Perjuangan (UBP) Karawang
 - Program Studi Utama: Sistem Informasi (S1)
@@ -44,10 +43,21 @@ Berikut adalah data/bahan informasi resmi dan lengkap yang harus kamu gunakan un
   3. Lulus mata kuliah Metodologi Penelitian dan Pemrograman Web.
   4. Proposal judul harus disetujui oleh dosen PA (Pembimbing Akademik).
 
-- Jadwal Kuliah & Jam Operasional Umum:
-  - Perkuliahan aktif Senin s.d. Jumat pukul 08.00 - 17.00 WIB (serta hari Sabtu untuk kelas/program tertentu).
+- Layanan Akademik:
   - Kartu Rencana Studi (KRS) diisi melalui portal akademik masing-masing mahasiswa setiap awal semester.
-- Layanan Akademik: Hubungi bagian tata usaha prodi atau cek portal web kampus untuk informasi surat aktif kuliah dan cuti.
+  - Untuk informasi surat aktif kuliah dan cuti, hubungi bagian tata usaha prodi atau cek portal web kampus.
+
+- KALENDER AKADEMIK SEMESTER GASAL 2026/2027 (sumber: SK Rektor Nomor 142/R/SK/2026):
+  - Perwalian dan pengisian KRS: 18 Agustus s.d. 20 September 2026.
+  - Modifikasi KRS: 21 s.d. 26 September 2026.
+  - Perkuliahan tengah semester: 21 September s.d. 7 November 2026.
+  - Pekan UTS: 9 s.d. 14 November 2026.
+  - Batas input nilai UTS: 16 s.d. 29 November 2026.
+  - Perkuliahan akhir semester: 16 November 2026 s.d. 2 Januari 2027.
+  - Pekan UAS: 11 s.d. 16 Januari 2027.
+  - Pengolahan KHS: 17 s.d. 31 Januari 2027.
+  - Batas sidang gelombang 1 semester gasal: 19 September 2026.
+  - Kegiatan wisuda ke-13: 24 November 2026.
 
 - DETAIL JADWAL PERKULIAHAN PRODI SISTEM INFORMASI (SEMESTER GANJIL TA 2026/2027):
 
@@ -109,45 +119,49 @@ Berikut adalah data/bahan informasi resmi dan lengkap yang harus kamu gunakan un
      - Sabtu:
        * Kuliah Kerja Nyata (KKN) (3 SKS, Dr. Tukino, S.Kom, MMSI) | Kelas A: 09.00-10.40, Kelas B: 11.00-12.40, Kelas C: 18.15-19.55.
 
-- TAMBAHAN DATA PRODI & FAKULTAS LAINNYA DI UBP KARAWANG:
-  1. Program Studi Magister Manajemen (S2):
-     - Contoh Jadwal Semester I (Kelas MM26A): Etika Profesi & Tata Kelola Organisasi (Sabtu 08.00 oleh Dr. H. Sihabudin), Inovasi & Kewirausahaan Digital (Sabtu 10.00 oleh Prof. Dr. H. Dedi Mulyadi), dll.
-  2. Program Studi S1 Teknik Industri:
-     - Menyediakan kelas paralel T126A-L (Semester 1), T125A-J (Semester 3), T124A-H (Semester 5), dan T123A-H (Semester 7) dengan mata kuliah seperti Pendidikan Pancasila, Kalkulus I, Pengantar Teknik Industri, dll.
-  3. Program Studi S1 Teknik Mesin:
-     - Menyediakan kelas pagi dan malam (TM 26A-E untuk Semester 1, TM 25A-D untuk Semester 3, TM 24A-C untuk Semester 5, serta konsentrasi Konversi Energi & Manufaktur untuk Semester 7).
-  4. Program Studi S1 Ilmu Hukum:
-     - Menyediakan kelas reguler dan malam (HK26A-E untuk Semester 1, HK25A-D untuk Semester 3, HK24A-D untuk Semester 5, dan HK23A-E untuk Semester 7) dengan mata kuliah seperti Pengantar Ilmu Hukum, Hukum Adat, Moot Court, dll.
-  5. Program Studi S1 Farmasi:
-     - Menyediakan kelas dari semester 1 hingga semester 7 (FM26, FM25, FM24, FM23). Mata kuliah mencakup Kalkulasi Farmasi, Farmakologi Molekuler, Farmasi Klinik, Fitoterapi, dll.
-  6. Program Studi S1 PPKn:
-     - Menyediakan kelas untuk semester 1 (PK26A), semester 3 (PK25A-B), semester 5 (PK24A-B), dan semester 7 (PK23A-B). Mata kuliah mencakup Pendidikan Pancasila, Kurikulum & Pembelajaran PPKn, Seminar PPKn, KKN, dll.
-  7. Program Studi S1 Teknik Informatika:
-     - Menyediakan kelas paralel dari semester 1 hingga semester 7 (IF26, IF25, IF24, IF23). Mata kuliah mencakup Algoritma, Basis Data, Pemrograman Web, Pembelajaran Mendalam, Visi Komputer, dll.
+- PRODI LAIN DI UBP KARAWANG (jadwal lengkapnya ada sebagai file resmi, lihat aturan di bawah):
+  - S2 Magister Manajemen, S1 Teknik Industri, S1 Teknik Mesin, S1 Ilmu Hukum, S1 Farmasi, S1 PPKn, S1 Pendidikan Agama Islam, S1 Psikologi, S1 Akuntansi, S1 Teknik Informatika, S1 PGSD, S1 Manajemen.
 
 Aturan Menjawab:
-- Jawablah pertanyaan mahasiswa secara ramah, sopan, dan gunakan format tabel yang rapi apabila mereka menanyakan jadwal mata kuliah.
-- Pastikan informasi hari, jam, dosen, ruang, dan kelas merujuk tepat pada data di atas.
+- Jawab dengan ramah, sopan, dan singkat.
+- Jangan membuat file CSV, jangan membuat tabel panjang, dan jangan menyalin seluruh jadwal ke dalam jawaban. Jawab hanya bagian yang ditanyakan, misalnya satu mata kuliah atau satu hari.
+- Jika ada catatan sistem tentang file resmi, sebut bahwa file tersebut bisa diunduh lewat tombol di bawah jawaban. Jangan menyebut nama file atau tautan.
+- Jika mahasiswa menanyakan jadwal tanpa menyebut program studi, tanyakan dulu program studinya.
+- Pastikan hari, jam, dosen, ruang, dan kelas sesuai dengan data di atas.
 - Jika informasi tidak ada di dalam data di atas, arahkan mahasiswa untuk bertanya langsung ke bagian administrasi prodi masing-masing di UBP Karawang.
 """
 
-# 4. Simpan Riwayat Percakapan
+# 4. Riwayat percakapan (termasuk tombol lampiran)
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {"role": "assistant", "content": "Halo! Ada yang bisa saya bantu terkait informasi akademik perkuliahanmu hari ini?"}
+        {"role": "assistant", "content": "Halo! Ada yang bisa saya bantu terkait informasi akademik perkuliahanmu hari ini?", "lampiran": []}
     ]
 
-for msg in st.session_state.messages:
+for idx, msg in enumerate(st.session_state.messages):
     with st.chat_message(msg["role"]):
         st.write(msg["content"])
+        if msg.get("lampiran"):
+            render_lampiran(msg["lampiran"], key_prefix=f"hist_{idx}")
 
-# 5. Kolom Input Pesan Pengguna
+# 5. Input pesan pengguna
 if user_input := st.chat_input("Ketik pertanyaan akademikmu di sini..."):
-    st.session_state.messages.append({"role": "user", "content": user_input})
+    st.session_state.messages.append({"role": "user", "content": user_input, "lampiran": []})
     with st.chat_message("user"):
         st.write(user_input)
 
-    groq_messages = [{"role": "system", "content": KNOWLEDGE_BASE}]
+    lampiran = cari_lampiran(user_input)
+
+    catatan = ""
+    if lampiran:
+        catatan = ("Catatan sistem: file resmi yang relevan tersedia sebagai tombol unduh di bawah jawaban. "
+                   "Jangan menuliskan ulang seluruh jadwal atau membuat CSV. Cukup sebut bahwa file bisa diunduh, "
+                   "tanpa menyebut nama file.")
+    elif ada_permintaan_file(user_input):
+        catatan = ("Catatan sistem: file yang diminta tidak tersedia. Sampaikan dengan sopan bahwa file tersebut "
+                   "belum tersedia dan arahkan mahasiswa ke bagian administrasi prodi.")
+
+    system_content = KNOWLEDGE_BASE + ("\n\n" + catatan if catatan else "")
+    groq_messages = [{"role": "system", "content": system_content}]
     for m in st.session_state.messages:
         groq_messages.append({"role": m["role"], "content": m["content"]})
 
@@ -160,9 +174,10 @@ if user_input := st.chat_input("Ketik pertanyaan akademikmu di sini..."):
                     temperature=0.3,
                     max_tokens=1024
                 )
-                
                 bot_reply = completion.choices[0].message.content
                 st.write(bot_reply)
-                st.session_state.messages.append({"role": "assistant", "content": bot_reply})
+                if lampiran:
+                    render_lampiran(lampiran, key_prefix=f"new_{len(st.session_state.messages)}")
+                st.session_state.messages.append({"role": "assistant", "content": bot_reply, "lampiran": lampiran})
             except Exception as e:
                 st.error(f"Terjadi kesalahan pada Groq API: {e}")
