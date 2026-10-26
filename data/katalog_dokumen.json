@@ -1,0 +1,5 @@
+[
+  {"judul": "Jadwal Perkuliahan Prodi Sistem Informasi 20261", "file": "Jadwal_Sistem_Informasi_20261.pdf", "kata_kunci": ["sistem informasi"], "kecuali": ["magister"], "jenis": "jadwal", "tanggal": "19 Sep 2026"},
+  {"judul": "Jadwal Perkuliahan Prodi Teknik Industri 20261", "file": "Jadwal_Teknik_Industri_20261.pdf", "kata_kunci": ["teknik industri"], "kecuali": [], "jenis": "jadwal", "tanggal": "19 Sep 2026"},
+  {"judul": "SK Rektor Kalender Akademik 2026/2027", "file": "Kalender_Akademik_2026-2027.pdf", "kata_kunci": ["kalender akademik", "kalender", "uts", "uas"], "kecuali": [], "jenis": "dokumen", "tanggal": "SK 11 Mei 2026"}
+]
