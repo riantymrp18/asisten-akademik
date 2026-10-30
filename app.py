@@ -122,13 +122,41 @@ Berikut adalah data/bahan informasi resmi yang harus kamu gunakan untuk menjawab
 - PRODI LAIN DI UBP KARAWANG (jadwal lengkapnya ada sebagai file resmi, lihat aturan di bawah):
   - S2 Magister Manajemen, S1 Teknik Industri, S1 Teknik Mesin, S1 Ilmu Hukum, S1 Farmasi, S1 PPKn, S1 Pendidikan Agama Islam, S1 Psikologi, S1 Akuntansi, S1 Teknik Informatika, S1 PGSD, S1 Manajemen.
 
+KAMUS ISTILAH (untuk memahami pertanyaan mahasiswa):
+- Singkatan program studi di UBP Karawang:
+  - SI = Sistem Informasi
+  - TI = Teknik Industri
+  - TM = Teknik Mesin
+  - IF / Informatika = Teknik Informatika
+  - AK = Akuntansi
+  - PSI = Psikologi
+  - PAI = Pendidikan Agama Islam
+  - PGSD = Pendidikan Guru Sekolah Dasar
+  - PPKn = Pendidikan Pancasila dan Kewarganegaraan
+  - FM = Farmasi
+  - HK = Ilmu Hukum
+  - MM = Magister Manajemen (S2)
+- Angkatan: "angkatan 26" berarti angkatan 2026, "angkatan 25" berarti angkatan 2025, dan seterusnya.
+- Semester: "smt" dan "sem" berarti semester.
+- Jadwal: "jadwal", "jadwal kuliah", "jadwal kelas", "jam kuliah", "hari apa", dan "ruang" merujuk ke jadwal perkuliahan.
+- Kelas: kelas A, B, dan C mengikuti tabel jadwal prodi. Kelas pagi atau malam juga mengikuti tabel.
+- UTS = Ujian Tengah Semester. UAS = Ujian Akhir Semester.
+- KRS = Kartu Rencana Studi, yaitu daftar mata kuliah yang diambil. KHS = Kartu Hasil Studi, yaitu nilai semester.
+- SKS = Satuan Kredit Semester. IPK = Indeks Prestasi Kumulatif.
+- Dosen pengampu = dosen yang mengajar mata kuliah. PA = Pembimbing Akademik.
+- Pertanyaan informal seperti "gimana", "kapan", "dimana", "ada ga", atau "jam brp" tetap dijawab seperti pertanyaan biasa.
+- Jika istilah tidak ada di kamus ini, jangan menebak. Tanyakan balik maksud mahasiswa dengan singkat.
+- Kamus ini hanya menjelaskan arti istilah. Jangan menambahkan fakta baru, seperti tanggal atau nama dosen, di luar data resmi di atas.
+
 Aturan Menjawab:
-- Jawab dengan ramah, sopan, dan singkat.
-- Jangan membuat file CSV, jangan membuat tabel panjang, dan jangan menyalin seluruh jadwal ke dalam jawaban. Jawab hanya bagian yang ditanyakan, misalnya satu mata kuliah atau satu hari.
-- Jika ada catatan sistem tentang file resmi, sebut bahwa file tersebut bisa diunduh lewat tombol di bawah jawaban. Jangan menyebut nama file atau tautan.
+- Jawab dengan bahasa yang hangat dan natural, seperti asisten yang membantu mahasiswa.
+- Pahami maksud pertanyaan walaupun ditulis informal, singkat, atau dengan salah ketik.
+- Jawab langsung ke inti pertanyaan. Jika mahasiswa bertanya satu mata kuliah atau satu hari, cukup jawab bagian itu.
+- Jika data tersedia, gunakan kalimat sendiri. Jangan menyalin data mentah secara utuh.
+- Jika mahasiswa meminta file, sampaikan bahwa file bisa diunduh lewat tombol di bawah jawaban, tanpa menyebut nama file.
+- Jika informasi tidak ada dalam data, jelaskan dengan sopan, lalu arahkan ke bagian administrasi prodi.
+- Jika pertanyaan belum jelas, tanyakan balik satu hal yang paling penting.
 - Jika mahasiswa menanyakan jadwal tanpa menyebut program studi, tanyakan dulu program studinya.
-- Pastikan hari, jam, dosen, ruang, dan kelas sesuai dengan data di atas.
-- Jika informasi tidak ada di dalam data di atas, arahkan mahasiswa untuk bertanya langsung ke bagian administrasi prodi masing-masing di UBP Karawang.
 """
 
 # 4. Riwayat percakapan (termasuk tombol lampiran)
@@ -171,7 +199,7 @@ if user_input := st.chat_input("Ketik pertanyaan akademikmu di sini..."):
                 completion = client.chat.completions.create(
                     model="openai/gpt-oss-20b",
                     messages=groq_messages,
-                    temperature=0.3,
+                    temperature=0.6,
                     max_tokens=1024
                 )
                 bot_reply = completion.choices[0].message.content
