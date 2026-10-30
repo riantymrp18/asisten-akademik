@@ -1,6 +1,6 @@
 import streamlit as st
 from groq import Groq
-from lampiran import cari_lampiran, render_lampiran, ada_permintaan_file
+from lampiran import cari_lampiran, render_lampiran, ada_permintaan_file, ambil_teks
 
 # 1. Judul dan Tampilan Header
 st.set_page_config(page_title="Asisten Informasi Akademik", page_icon="🤖")
@@ -178,15 +178,29 @@ if user_input := st.chat_input("Ketik pertanyaan akademikmu di sini..."):
         st.write(user_input)
 
     lampiran = cari_lampiran(user_input)
+    teks_jadwal = ambil_teks(lampiran)
 
     catatan = ""
-    if lampiran:
-        catatan = ("Catatan sistem: file resmi yang relevan tersedia sebagai tombol unduh di bawah jawaban. "
-                   "Jangan menuliskan ulang seluruh jadwal atau membuat CSV. Cukup sebut bahwa file bisa diunduh, "
-                   "tanpa menyebut nama file.")
+    if teks_jadwal:
+        catatan = (
+            "Catatan sistem: berikut data jadwal resmi yang relevan. Jawab HANYA berdasarkan data ini. "
+            "Jika mahasiswa menyebut kelas, hari, atau angkatan, pilih baris yang sesuai saja. "
+            "Jika kelas belum disebut dan jadwal punya beberapa kelas, tanyakan kelasnya dulu. "
+            "Jika data tidak memuat yang ditanyakan, katakan belum ditemukan dan arahkan ke bagian administrasi prodi. "
+            "Jangan menulis tautan, tanda kurung siku, atau nama file. "
+            "Sebut singkat bahwa file resmi bisa diunduh lewat tombol di bawah jawaban.\n\n"
+            + teks_jadwal
+        )
+    elif lampiran:
+        catatan = (
+            "Catatan sistem: file resmi tersedia sebagai tombol unduh di bawah jawaban. "
+            "Sebut singkat bahwa file bisa diunduh. Jangan menulis tautan, tanda kurung siku, atau nama file."
+        )
     elif ada_permintaan_file(user_input):
-        catatan = ("Catatan sistem: file yang diminta tidak tersedia. Sampaikan dengan sopan bahwa file tersebut "
-                   "belum tersedia dan arahkan mahasiswa ke bagian administrasi prodi.")
+        catatan = (
+            "Catatan sistem: file yang diminta tidak tersedia. Sampaikan dengan sopan bahwa file belum tersedia "
+            "dan arahkan mahasiswa ke bagian administrasi prodi."
+        )
 
     system_content = KNOWLEDGE_BASE + ("\n\n" + catatan if catatan else "")
     groq_messages = [{"role": "system", "content": system_content}]
