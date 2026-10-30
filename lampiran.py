@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import streamlit as st
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -13,22 +14,26 @@ KATA_FILE = ["file", "pdf", "unduh", "download", "lampiran", "berkas", "salinan"
 KATA_JADWAL = ["jadwal", "kuliah", "kelas"]
 
 
+def cocok(kata: str, teks: str) -> bool:
+    return re.search(r"\b" + re.escape(kata) + r"\b", teks) is not None
+
+
 def ada_permintaan_file(pertanyaan: str) -> bool:
     q = pertanyaan.lower()
-    return any(k in q for k in KATA_FILE)
+    return any(cocok(k, q) for k in KATA_FILE)
 
 
 def cari_lampiran(pertanyaan: str) -> list:
     q = pertanyaan.lower()
     minta_file = ada_permintaan_file(pertanyaan)
-    bahas_jadwal = any(k in q for k in KATA_JADWAL)
+    bahas_jadwal = any(cocok(k, q) for k in KATA_JADWAL)
     if not (minta_file or bahas_jadwal):
         return []
     hasil = []
     for doc in KATALOG:
-        if any(k in q for k in doc.get("kecuali", [])):
+        if any(cocok(k, q) for k in doc.get("kecuali", [])):
             continue
-        if not any(k in q for k in doc["kata_kunci"]):
+        if not any(cocok(k, q) for k in doc["kata_kunci"]):
             continue
         if minta_file or doc.get("jenis") == "jadwal":
             hasil.append(doc)
@@ -41,9 +46,9 @@ def cari_teks(pertanyaan: str) -> list:
     for doc in KATALOG:
         if not doc.get("teks"):
             continue
-        if any(k in q for k in doc.get("kecuali", [])):
+        if any(cocok(k, q) for k in doc.get("kecuali", [])):
             continue
-        if any(k in q for k in doc["kata_kunci"]):
+        if any(cocok(k, q) for k in doc["kata_kunci"]):
             hasil.append(doc)
     return hasil
 
@@ -51,6 +56,8 @@ def cari_teks(pertanyaan: str) -> list:
 def ambil_teks(docs: list, maks: int = 2) -> str:
     bagian = []
     for doc in docs:
+        if not doc.get("teks"):
+            continue
         path = os.path.join(BASE_DIR, doc["teks"])
         if os.path.exists(path):
             with open(path, encoding="utf-8") as f:
