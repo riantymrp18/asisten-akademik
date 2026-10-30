@@ -5,17 +5,40 @@ from lampiran import cari_lampiran, render_lampiran, ada_permintaan_file
 # 1. Judul dan Tampilan Header
 st.set_page_config(page_title="Asisten Informasi Akademik", page_icon="🤖")
 
-hide_st_style = """
-            <style>
-            #MainMenu {visibility: hidden;}
-            footer {visibility: hidden;}
-            header {visibility: hidden;}
-            </style>
-            """
-st.markdown(hide_st_style, unsafe_allow_html=True)
+tampilan = """
+<style>
+#MainMenu, footer, header {visibility: hidden;}
+.stApp { background-color: #F4F7FB; }
+h1 { color: #1E3A5F; font-weight: 700; }
+[data-testid="stChatMessage"] {
+    background-color: #FFFFFF;
+    border: 1px solid #DCE3ED;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+}
+[data-testid="stChatInput"] textarea { border-radius: 10px; }
+.banner-prototipe {
+    background-color: #FFF4D6;
+    border-left: 5px solid #E0A800;
+    padding: 0.6rem 0.9rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: #5C4A00;
+    margin-bottom: 1rem;
+}
+</style>
+"""
+st.markdown(tampilan, unsafe_allow_html=True)
 
 st.title("🤖 Asisten Informasi Akademik")
 st.caption("Tanyakan informasi seputar perkuliahan, jadwal, dan administrasi akademik.")
+
+st.markdown("""
+<div class="banner-prototipe">
+    <b>Prototipe penelitian Tugas Akhir.</b> Ini bukan layanan resmi Universitas Buana Perjuangan Karawang
+    dan belum terintegrasi dengan SIPT. Untuk informasi resmi, cek dokumen asli atau hubungi bagian administrasi prodi.
+</div>
+""", unsafe_allow_html=True)
 
 # 2. Ambil Groq API Key dari Secrets Streamlit
 try:
