@@ -5,99 +5,17 @@ from lampiran import cari_lampiran, render_lampiran, ada_permintaan_file
 # 1. Judul dan Tampilan Header
 st.set_page_config(page_title="Asisten Informasi Akademik", page_icon="🤖")
 
-tampilan = """
-<style>
-#MainMenu, footer, header {visibility: hidden;}
-.stApp {
-    background: linear-gradient(160deg, #E8F4FF 0%, #F3EEFF 50%, #FFF6E5 100%);
-}
-.block-container { max-width: 860px; padding-top: 2rem; }
-.kepala {
-    background: linear-gradient(135deg, #1565C0 0%, #7E57C2 100%);
-    color: #FFFFFF;
-    border-radius: 16px;
-    padding: 1.3rem 1.6rem;
-    margin-bottom: 1rem;
-    box-shadow: 0 4px 14px rgba(21,101,192,0.25);
-}
-.kepala h2 { color: #FFFFFF; margin: 0 0 0.3rem 0; font-size: 1.7rem; }
-.kepala p { color: #E3ECFF; margin: 0; font-size: 0.95rem; }
-.lencana {
-    display: inline-block;
-    background: #FFC93C;
-    color: #3B2A00;
-    font-size: 0.75rem;
-    font-weight: 700;
-    padding: 0.2rem 0.7rem;
-    border-radius: 999px;
-    margin-bottom: 0.6rem;
-}
-[data-testid="stChatMessage"] {
-    border-radius: 16px;
-    padding: 0.8rem 1rem;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-    border: none;
-}
-[data-testid="stChatMessage"]:has([aria-label="Chat message from assistant"]) {
-    background-color: #FFFFFF;
-}
-[data-testid="stChatMessage"]:has([aria-label="Chat message from user"]) {
-    background-color: #DCEBFF;
-}
-[data-testid="stChatInput"] textarea {
-    border-radius: 14px;
-    border: 2px solid #7E57C2;
-}
-.stButton > button {
-    background: #FFFFFF;
-    color: #1565C0;
-    border: 2px solid #1565C0;
-    border-radius: 999px;
-    font-weight: 600;
-    transition: all 0.15s ease;
-}
-.stButton > button:hover {
-    background: #1565C0;
-    color: #FFFFFF;
-}
-.banner-prototipe {
-    background-color: #FFF1C2;
-    border-left: 6px solid #F9A825;
-    padding: 0.7rem 1rem;
-    border-radius: 10px;
-    font-size: 0.9rem;
-    color: #5C4300;
-    margin-bottom: 1rem;
-}
-</style>
-"""
-st.markdown(tampilan, unsafe_allow_html=True)
+hide_st_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            header {visibility: hidden;}
+            </style>
+            """
+st.markdown(hide_st_style, unsafe_allow_html=True)
 
-st.markdown("""
-<div class="kepala">
-    <span class="lencana">PROTOTIPE TUGAS AKHIR</span>
-    <h2>Asisten Informasi Akademik</h2>
-    <p>Tanyakan jadwal perkuliahan, daftar dosen pengampu, dan kalender akademik semester ganjil 2026/2027.</p>
-</div>
-""", unsafe_allow_html=True)
-
-st.markdown("""
-<div class="banner-prototipe">
-    <b>Prototipe penelitian Tugas Akhir.</b> Ini bukan layanan resmi Universitas Buana Perjuangan Karawang
-    dan belum terintegrasi dengan SIPT. Untuk informasi resmi, cek dokumen asli atau hubungi bagian administrasi prodi.
-</div>
-""", unsafe_allow_html=True)
-
-# Tombol contoh pertanyaan
-contoh = [
-    "Jadwal kuliah Sistem Informasi semester 3",
-    "Kapan UTS semester ganjil?",
-    "Minta file kalender akademik",
-]
-kolom = st.columns(len(contoh))
-for i, teks in enumerate(contoh):
-    if kolom[i].button(teks, key=f"contoh_{i}", use_container_width=True):
-        st.session_state["pending"] = teks
+st.title("🤖 Asisten Informasi Akademik")
+st.caption("Tanyakan informasi seputar perkuliahan, jadwal, dan administrasi akademik.")
 
 # 2. Ambil Groq API Key dari Secrets Streamlit
 try:
@@ -225,10 +143,8 @@ for idx, msg in enumerate(st.session_state.messages):
         if msg.get("lampiran"):
             render_lampiran(msg["lampiran"], key_prefix=f"hist_{idx}")
 
-# 5. Input pesan pengguna (dari kolom ketik atau tombol contoh)
-user_input = st.chat_input("Ketik pertanyaan akademikmu di sini...") or st.session_state.pop("pending", None)
-
-if user_input:
+# 5. Input pesan pengguna
+if user_input := st.chat_input("Ketik pertanyaan akademikmu di sini..."):
     st.session_state.messages.append({"role": "user", "content": user_input, "lampiran": []})
     with st.chat_message("user"):
         st.write(user_input)
