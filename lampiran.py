@@ -2,6 +2,7 @@ import json
 import os
 import re
 import streamlit as st
+import pdfplumber
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DOC_DIR = os.path.join(BASE_DIR, "data", "dokumen")
@@ -44,8 +45,6 @@ def cari_teks(pertanyaan: str) -> list:
     q = pertanyaan.lower()
     hasil = []
     for doc in KATALOG:
-        if not doc.get("teks"):
-            continue
         if any(cocok(k, q) for k in doc.get("kecuali", [])):
             continue
         if any(cocok(k, q) for k in doc["kata_kunci"]):
@@ -53,15 +52,31 @@ def cari_teks(pertanyaan: str) -> list:
     return hasil
 
 
+@st.cache_data
+def teks_dari_pdf(nama_file: str) -> str:
+    path = os.path.join(DOC_DIR, nama_file)
+    if not os.path.exists(path):
+        return ""
+    halaman = []
+    with pdfplumber.open(path) as pdf:
+        for p in pdf.pages:
+            halaman.append(p.extract_text() or "")
+    return "\n".join(halaman)
+
+
 def ambil_teks(docs: list, maks: int = 2) -> str:
     bagian = []
     for doc in docs:
-        if not doc.get("teks"):
-            continue
-        path = os.path.join(BASE_DIR, doc["teks"])
-        if os.path.exists(path):
-            with open(path, encoding="utf-8") as f:
-                bagian.append(f"--- {doc['judul']} ---\n{f.read()}")
+        isi = ""
+        if doc.get("teks"):
+            path = os.path.join(BASE_DIR, doc["teks"])
+            if os.path.exists(path):
+                with open(path, encoding="utf-8") as f:
+                    isi = f.read()
+        if not isi and doc.get("jenis") == "jadwal":
+            isi = teks_dari_pdf(doc["file"])
+        if isi:
+            bagian.append(f"--- {doc['judul']} ---\n{isi}")
         if len(bagian) >= maks:
             break
     return "\n\n".join(bagian)
